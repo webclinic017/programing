@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import json
 import pprint
 import pandas as pd
-
+import yfinance as yf
 pd.set_option('display.max_rows',500)
 pd.set_option('display.max_columns',500)
 pd.set_option('display.width',1000)
@@ -16,29 +16,49 @@ def init_xw():
     global wb,ws
     fname ="./test.xlsx"
     wb = xw.Book(fname)
-    wb.sheets.add()
     ws = wb.sheets[0]
 
-def add_ws():
+def add_ws(name ='ws'):
     global wb,ws
     wb.sheets.add()
     ws = wb.sheets[0]
+    ws.name=name
 
-
-def pexcel(df):
+def write_ws(df):
     global wb,ws
     ws.range((1,1)).value =df
     
-name="O"
-freq="Q"
-
 types = ['income-statement?freq='
     ,'balance-sheet?freq='
     ,'cash-flow-statement?freq='
     ,'financial-ratios?freq='
     ]
     
-    
+
+#msft = yf.Ticker("MSFT")
+#msft.info
+#hist = msft.history(period="max")
+#msft.actions
+#msft.dividends
+#msft.splits
+#msft.financials
+#msft.quarterly_financials
+#stock.major_holders
+#stock.institutional_holders
+#msft.balance_sheet
+#msft.quarterly_balance_sheet
+#msft.cashflow
+#msft.quarterly_cashflow
+#msft.earnings
+#msft.quarterly_earnings
+#msft.sustainability
+#msft.recommendations
+#msft.calendar
+#msft.isin
+#msft.options
+#opt = msft.option_chain('YYYY-MM-DD')
+
+
 def get_data(name="O",freq="Q"):
     if freq !='A' and freq !='Q':
         return 0
@@ -79,21 +99,81 @@ def get_data(name="O",freq="Q"):
         
     return df_list
 
-#%%
+
+def save_data(name):
+    "분기별, 연도별, 파이넨스 데이터 전부."
+    "일별 주가 데이터전부."
+    global wb,ws
     
-aa = get_data('O','Q')
+    fname ="./data/data_{}.xlsx".format(name)
+    wb = xw.Book()
+    ws = wb.sheets[0]
+    
+    aa = get_data(name,'Q')
+    add_ws('Qincome')
+    write_ws(aa[0])
+    add_ws('Qbalance')
+    write_ws(aa[1])
+    add_ws('Qfinratio')
+    write_ws(aa[3])
+    
+    aa = get_data(name,'A')
+    add_ws('Aincome')
+    write_ws(aa[0])
+    add_ws('Abalance')
+    write_ws(aa[1])
+    add_ws('Acashflow')
+    write_ws(aa[2])
+    add_ws('Afinratio')
+    write_ws(aa[3])
+    
+    
+    tick = yf.Ticker(name)
+#    add_ws('info')
+#    
+#    i = 1
+#    for k,v in tick.info.items():
+##        print(k,v,type(k),type(v)) 
+#        ws.range((i,1)).value = k
+#        ws.range((i,2)).value = v
+#        i+=1
+#        
+#    add_ws('actions')
+#    write_ws(tick.actions)
+    add_ws('history')
+    write_ws(tick.history(period="max"))
+    
+    wb.save(fname)
+    
+    wb.close()
+    
 
 #%%
 
-ws.range((1,1)).value = aa[0]
-add_ws()
-ws.range((1,1)).value = aa[1]
-add_ws()
-ws.range((1,1)).value = aa[2]
-add_ws()
-ws.range((1,1)).value = aa[3]
+save_data('WFC')
+
+#%%
+
+tic=['SPG','CCL','LULU','DOCU','ABBV','XOM','VZ','MSFT']
+for t in tic:
+    save_data(t)
+
+#%%
+
+"extract yield curve "
+rawurl = 'https://www.treasury.gov/resource-center/data-chart-center/interest-rates/pages/TextView.aspx?data=yieldAll'
+res = requests.get(rawurl)
+    
+html = res.text
+soup = BeautifulSoup(html,'html.parser')
+
+table = soup.find_all('table',class_='t-chart')
+df = pd.read_html(table[0].prettify())
+df = df[0].fillna(0)
+df.to_csv('./data/yield_curve.csv')
 
 
 
+#%%
 
 
