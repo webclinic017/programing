@@ -154,7 +154,8 @@ save_data('WFC')
 
 #%%
 
-tic=['SPG','CCL','LULU','DOCU','ABBV','XOM','VZ','MSFT']
+#tic=['SPG','CCL','LULU','DOCU','ABBV','XOM','VZ','MSFT']
+tic=['DLR','TSN','HTGC','GSBD']
 for t in tic:
     save_data(t)
 
