@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr 19 15:06:20 2021
+
+@author: JAE
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -176,5 +183,3 @@ df.to_csv('./data/yield_curve.csv')
 
 
 #%%
-
-
