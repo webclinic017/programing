@@ -22,7 +22,7 @@ tickers = yf.Tickers('msft aapl goog')
 
 # access each ticker using (example)
 tickers.tickers.MSFT.info
-tickers.tickers.AAPL.history(period="1mo")
+tickers.tickers.AAPL.info
 
 
 
@@ -54,7 +54,13 @@ bal = yy.quarterly_balancesheet
 fin = yy.quarterly_financials
 info = yy.info
 
+
+dd = []
+for k,v in info.items():
+    dd.append([k,v])
     
+dd = pd.DataFrame(dd)
+dd.to_csv('./test1.csv',index=False)
 #%%
 #GP/A
 gp = fin[fin.index =='Gross Profit'].iloc[0,0]
@@ -91,6 +97,15 @@ info['enterpriseToEbitda'] #ev/ebitda 멀티플
 info['floatShares'] #유동 주식수.
 
 
+"""
+profitMargins
+sharesOutstanding
+earningsQuarterlyGrowth
+pegRatio
+regularMarketPrice
+"""
+
+
 
 #%%
 import pandas as pd
@@ -102,13 +117,40 @@ pd.set_option('display.max_columns',500)
 pd.set_option('display.width',1000)
 
 
+def get_momentum(tick , months=[1,3,6,12],margin_day=7):
+#    tick ='AAPL'
+#    months=[1,3,6,12]
+#    margin_day=7
+    
+    now = datetime.now().date()
+    now2 = (now-relativedelta(days=margin_day))
+    
+    
+    vv = yf.download(tick , start=now2, end=now,progress=False)
+    latest_price = vv['Close'][-1] #최근 가격
+    
+    mm_list = []
+    
+    for mo in months:
+        m1 = (now2-relativedelta(months=mo))
+        m2 = (now-relativedelta(months=mo))
+    
+        vv2 = yf.download(tick , start=m1, end=m2,progress=False)
+        mm_list.append(vv2['Close'].mean())  #종가 평균.
+    return latest_price/mm_list
+
+
 #신 마법 공식   저 PBR, 고 GP/A 
 df = pd.read_csv('IWV_holdings.csv')
 tickers = df.Ticker
-maxsize = len(tickers)
+#maxsize = len(tickers)
+maxsize = 20
 tickers = df.Ticker.iloc[0:maxsize]
 
-target_month = ['2020-11-01','2021-02-01'] #포함 범위.
+#target_month = ['2020-11-01','2021-02-01'] #포함 범위.
+import time
+
+start = time.time()
 
 mem = []
 for ii, tick in enumerate(tickers): 
@@ -144,6 +186,9 @@ for ii, tick in enumerate(tickers):
 df1 = pd.DataFrame(mem)
 df1.columns=['TICK','GP/A','PBR']
 df1.to_csv('./aaa.csv')
+
+print("end time : ",time.time()-start)
+
 
 df1 = pd.read_csv('./aaa.csv')
 

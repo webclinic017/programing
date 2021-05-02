@@ -125,10 +125,15 @@ pd.set_option('display.width',1000)
 #신 마법 공식   저 PBR, 고 GP/A 
 df = pd.read_csv('IWV_holdings.csv')
 tickers = df.Ticker
-maxsize = len(tickers)
+#maxsize = len(tickers)
+maxsize = 20
 tickers = df.Ticker.iloc[0:maxsize]
 
 target_month = ['2020-11-01','2021-02-01'] #포함 범위.
+
+import time
+start = time.time()
+
 
 mem = []
 for ii, tick in enumerate(tickers): 
@@ -169,7 +174,7 @@ for ii, tick in enumerate(tickers):
 df1 = pd.DataFrame(mem)
 df1.columns=['TICK','GP/A','PBR']
 df1.to_csv('./aaa_trend.csv')
-
+print('end time:',time.time()-start)
 df1['GP/A rank'] = df1['GP/A'].rank(method='average', ascending=False) #high GP/A
 df1['PBR rank'] = df1['PBR'].rank(method='average', ascending=True) #low PBR
 df1['magic rank'] = df1['PBR rank']+df1['GP/A rank']
