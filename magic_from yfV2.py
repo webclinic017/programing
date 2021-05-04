@@ -136,6 +136,37 @@ def get_momentum(tick , months=[1,3,6,12],margin_day=7):
         mm_list.append(vv2['Close'].mean())  #종가 평균.
     return latest_price/mm_list
 
+def save_balsheet(tick):
+    yy = yf.Ticker(tick)
+    cash = yy.quarterly_cashflow
+    bal = yy.quarterly_balancesheet
+    fin = yy.quarterly_financials
+    bal=pd.concat([bal,fin,cash])
+
+
+    bal.to_csv('./data2/{}.csv'.format(tick),index=False)
+    info = yy.info
+    dd = []
+    for k,v in info.items():
+        dd.append([k,v])
+        
+    dd = pd.DataFrame(dd)
+    dd.to_csv('./data2/{}_info.csv'.format(tick),index=False)
+    return bal,dd
+
+def load_balsheet(tick):
+    bal = pd.read_csv('./data2/{}.csv'.format(tick))
+    info = pd.read_csv('./data2/{}_info.csv'.format(tick))
+    return bal,info
+   
+def update_all_balsheet():
+    df = pd.read_csv('IWV_holdings.csv')
+    tickers = df.Ticker
+    
+    for ii, tick in enumerate(tickers): 
+        bal,info=save_balsheet(tick)
+        print(tick,'\t', ii,'/',len(tickers),'\t',bal[bal.index=="Total Assetes"],info[info.index='priceToBook'])
+
 
 #신 마법 공식   저 PBR, 고 GP/A 
 df = pd.read_csv('IWV_holdings.csv')
@@ -153,14 +184,7 @@ for ii, tick in enumerate(tickers):
     gp_a=np.nan
     pbr= np.nan
     try: 
-        yy = yf.Ticker(tick)
-        cash = yy.quarterly_cashflow
-        bal = yy.quarterly_balancesheet
-        fin = yy.quarterly_financials
-        bal=pd.concat([bal,fin,cash])
-        bal.to_csv('./data2/{}.csv'.format(tick))
-        info = yy.info
-
+        bal, info = load_balsheet(tick)
     
         gp = bal[bal.index =='Gross Profit'].iloc[0,0]
         ass = bal[bal.index =='Total Assets'].iloc[0,0]
