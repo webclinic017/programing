@@ -108,64 +108,20 @@ info['regularMarketPrice']
 import pandas as pd
 import yfinance as yf
 import numpy as np
+import numpy as np
+from datetime import datetime
+from dateutil.relativedelta import *
+import time
+
+from multiprocessing import Process, Queue
 
 pd.set_option('display.max_rows',500)
 pd.set_option('display.max_columns',500)
 pd.set_option('display.width',1000)
 
 
-def get_momentum(tick , months=[1,3,6,12],margin_day=7):
-#    tick ='AAPL'
-#    months=[1,3,6,12]
-#    margin_day=7
-    
-    now = datetime.now().date()
-    now2 = (now-relativedelta(days=margin_day))
-    
-    
-    vv = yf.download(tick , start=now2, end=now,progress=False)
-    latest_price = vv['Close'][-1] #최근 가격
-    
-    mm_list = []
-    
-    for mo in months:
-        m1 = (now2-relativedelta(months=mo))
-        m2 = (now-relativedelta(months=mo))
-    
-        vv2 = yf.download(tick , start=m1, end=m2,progress=False)
-        mm_list.append(vv2['Close'].mean())  #종가 평균.
-    return latest_price/mm_list
-
-def save_balsheet(tick):
-    yy = yf.Ticker(tick)
-    cash = yy.quarterly_cashflow
-    bal = yy.quarterly_balancesheet
-    fin = yy.quarterly_financials
-    bal=pd.concat([bal,fin,cash])
 
 
-    bal.to_csv('./data2/{}.csv'.format(tick),index=False)
-    info = yy.info
-    dd = []
-    for k,v in info.items():
-        dd.append([k,v])
-        
-    dd = pd.DataFrame(dd)
-    dd.to_csv('./data2/{}_info.csv'.format(tick),index=False)
-    return bal,dd
-
-def load_balsheet(tick):
-    bal = pd.read_csv('./data2/{}.csv'.format(tick))
-    info = pd.read_csv('./data2/{}_info.csv'.format(tick))
-    return bal,info
-   
-def update_all_balsheet():
-    df = pd.read_csv('IWV_holdings.csv')
-    tickers = df.Ticker
-    
-    for ii, tick in enumerate(tickers): 
-        bal,info=save_balsheet(tick)
-        print(tick,'\t', ii,'/',len(tickers),'\t',bal[bal.index=="Total Assetes"],info[info.index='priceToBook'])
 
 
 #신 마법 공식   저 PBR, 고 GP/A 

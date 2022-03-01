@@ -20,7 +20,7 @@ sheet = ['https://finance.yahoo.com/quote/{}/financials?p={}',
 import time
 
 def scrap(tick,sheet):
-#    sheet=sheet[0]
+#    sheet=sheet[2]
     driver.get(sheet.format(tick,tick))
     driver.implicitly_wait(time_to_wait=5)
     
