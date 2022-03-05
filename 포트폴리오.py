@@ -14,6 +14,95 @@ df = df.fillna(method='ffill')
 df = df.dropna(axis=0,how='any')
 
 # df.to_clipboard()
+#%% data download
+"""
+AGG US Tbond aggregate 
+BND total bond
+BNDX total international bond
+BSV 단기 세계
+
+LQD 투자등급 회사채
+
+MBB  MBS 채권
+IGSB 1-5Y 투자등급 회사채
+
+
+VCIT 중기 회사채
+VCSH 단기 회사채
+
+
+HYG  high yield 회사채
+JNK  high yield 회사채
+SRLN  시니어 론 ETF 
+
+
+
+SHV  1M~1Y Tbond
+SHY  1~3Y Tbond  
+IEF  7~10Y Tbond
+TLT  19Y Tbond
+VGLT 18Y Tbond
+EDV  25Y Tbond
+
+SCHP 7.5Y TIPS
+VTIP 1~3Y 단기 TIPS
+TIP  7~10 중기 TIPS
+LTPZ   20+ 장기 TIPS
+
+UST  중기 2x
+TYD  중기 3x
+UBT  장기 2x
+TMF  장기 3x
+
+TBX  중기 -1x
+PST  중기 -2x
+
+TMV  장기 -3x
+
+TBF  장기 -1x
+TBT  장기 -2x
+TTT  장기 -3x
+
+SH   sp500 -1x
+SDS  sp500 -2x
+SPXU sp500  -3x
+SPXS  sp500 -3x #거래량 적음
+SSO    2x
+SPXL    3x
+UPRO  3x
+
+UVXY  x1.5 vix 단기 
+TVIX   x2  ETN
+VIXY  vix 단기
+SIXY   -1x
+VIXM  중기 vix
+SVXY  vix 단기 -1x
+VXX   vix 단기  ETN 최초 상품
+VXZ  중기 vix ETN
+
+
+
+QQQ   1x
+PSQ  -1x
+QID  -2x
+
+SQQQ  -3x
+TQQQ  3x
+QLD x2
+
+QYLD  qqq커버드 콜
+
+
+GLD
+SLV
+
+
+"""
+
+"SHY IEF TLT EDV VTIP TIP LTPZ "
+
+
+
 #%% 분기 분할
 df = df.resample(rule='1Q').last()
 
